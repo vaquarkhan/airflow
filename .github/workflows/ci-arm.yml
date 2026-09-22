@@ -61,6 +61,9 @@ concurrency:
 jobs:
   build-info:
     name: "Build info"
+    # Scheduled canaries need ASF remotes, helm tags, and apache image names.
+    # Skip cron on forks; keep PR / push / workflow_dispatch.
+    if: github.repository == 'apache/airflow' || github.event_name != 'schedule'
     # At build-info stage we do not yet have outputs so we need to hard-code the runs-on to public runners
     runs-on: ["ubuntu-22.04"]
     outputs:
@@ -1188,6 +1191,7 @@ jobs:
     if: >-
       always() &&
       !cancelled() &&
+      github.repository == 'apache/airflow' &&
       github.event_name == 'schedule' &&
       github.run_attempt == 1
     runs-on: ["ubuntu-slim"]
